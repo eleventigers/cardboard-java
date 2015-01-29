@@ -12,9 +12,11 @@ import com.google.vrtoolkit.cardboard.*;
 import java.util.*;
 
 public class NfcSensor {
+
     private static final String TAG = "NfcSensor";
     private static final int MAX_CONNECTION_FAILURES = 1;
     private static final long NFC_POLLING_INTERVAL_MS = 250L;
+
     private static NfcSensor sInstance;
     private final Context mContext;
     private final NfcAdapter mNfcAdapter;
@@ -36,18 +38,18 @@ public class NfcSensor {
     
     private NfcSensor(final Context context) {
         super();
-        this.mContext = context.getApplicationContext();
-        this.mNfcAdapter = NfcAdapter.getDefaultAdapter(this.mContext);
-        this.mListeners = new ArrayList<ListenerHelper>();
-        this.mTagLock = new Object();
-        if (this.mNfcAdapter == null) {
+        mContext = context.getApplicationContext();
+        mNfcAdapter = NfcAdapter.getDefaultAdapter(this.mContext);
+        mListeners = new ArrayList<>();
+        mTagLock = new Object();
+        if (mNfcAdapter == null) {
             return;
         }
         final IntentFilter ndefIntentFilter = new IntentFilter("android.nfc.action.NDEF_DISCOVERED");
         ndefIntentFilter.addAction("android.nfc.action.TECH_DISCOVERED");
         ndefIntentFilter.addAction("android.nfc.action.TAG_DISCOVERED");
-        this.mNfcIntentFilters = new IntentFilter[] { ndefIntentFilter };
-        this.mContext.registerReceiver((BroadcastReceiver)new BroadcastReceiver() {
+        mNfcIntentFilters = new IntentFilter[] { ndefIntentFilter };
+        mContext.registerReceiver(new BroadcastReceiver() {
             public void onReceive(final Context context, final Intent intent) {
                 NfcSensor.this.onNfcIntent(intent);
             }
@@ -58,13 +60,13 @@ public class NfcSensor {
         if (listener == null) {
             return;
         }
-        synchronized (this.mListeners) {
-            for (final ListenerHelper helper : this.mListeners) {
+        synchronized (mListeners) {
+            for (final ListenerHelper helper : mListeners) {
                 if (helper.getListener() == listener) {
                     return;
                 }
             }
-            this.mListeners.add(new ListenerHelper(listener, new Handler()));
+            mListeners.add(new ListenerHelper(listener, new Handler()));
         }
     }
     
@@ -72,44 +74,46 @@ public class NfcSensor {
         if (listener == null) {
             return;
         }
-        synchronized (this.mListeners) {
-            for (final ListenerHelper helper : this.mListeners) {
+        synchronized (mListeners) {
+            Iterator<ListenerHelper> iterator = mListeners.iterator();
+            while (iterator.hasNext()) {
+                ListenerHelper helper = iterator.next();
                 if (helper.getListener() == listener) {
-                    this.mListeners.remove(helper);
+                    iterator.remove();
                 }
             }
         }
     }
     
     public boolean isNfcSupported() {
-        return this.mNfcAdapter != null;
+        return mNfcAdapter != null;
     }
     
     public boolean isNfcEnabled() {
-        return this.isNfcSupported() && this.mNfcAdapter.isEnabled();
+        return isNfcSupported() && mNfcAdapter.isEnabled();
     }
     
     public boolean isDeviceInCardboard() {
-        synchronized (this.mTagLock) {
-            return this.mCurrentTagIsCardboard;
+        synchronized (mTagLock) {
+            return mCurrentTagIsCardboard;
         }
     }
     
     public NdefMessage getTagContents() {
-        synchronized (this.mTagLock) {
-            return (this.mCurrentNdef != null) ? this.mCurrentNdef.getCachedNdefMessage() : null;
+        synchronized (mTagLock) {
+            return (mCurrentNdef != null) ? mCurrentNdef.getCachedNdefMessage() : null;
         }
     }
     
     public NdefMessage getCurrentTagContents() throws TagLostException, IOException, FormatException {
-        synchronized (this.mTagLock) {
-            return (this.mCurrentNdef != null) ? this.mCurrentNdef.getNdefMessage() : null;
+        synchronized (mTagLock) {
+            return (mCurrentNdef != null) ? mCurrentNdef.getNdefMessage() : null;
         }
     }
     
     public int getTagCapacity() {
-        synchronized (this.mTagLock) {
-            if (this.mCurrentNdef == null) {
+        synchronized (mTagLock) {
+            if (mCurrentNdef == null) {
                 throw new IllegalStateException("No NFC tag");
             }
             return this.mCurrentNdef.getMaxSize();
@@ -117,8 +121,8 @@ public class NfcSensor {
     }
     
     public void writeUri(final Uri uri) throws TagLostException, IOException, IllegalArgumentException {
-        synchronized (this.mTagLock) {
-            if (this.mCurrentTag == null) {
+        synchronized (mTagLock) {
+            if (mCurrentTag == null) {
                 throw new IllegalStateException("No NFC tag found");
             }
             NdefMessage currentMessage = null;
@@ -126,8 +130,7 @@ public class NfcSensor {
             final NdefRecord newRecord = NdefRecord.createUri(uri);
             try {
                 currentMessage = this.getCurrentTagContents();
-            }
-            catch (Exception e3) {
+            } catch (Exception e3) {
                 currentMessage = this.getTagContents();
             }
             if (currentMessage != null) {
@@ -139,35 +142,37 @@ public class NfcSensor {
                             newRecords.add(newRecord);
                             recordFound = true;
                         }
-                    }
-                    else {
+                    } else {
                         newRecords.add(record);
                     }
                 }
-                newMessage = new NdefMessage((NdefRecord[])newRecords.toArray(new NdefRecord[newRecords.size()]));
+                newMessage = new NdefMessage(newRecords.toArray(new NdefRecord[newRecords.size()]));
             }
             if (newMessage == null) {
                 newMessage = new NdefMessage(new NdefRecord[] { newRecord });
             }
             Label_0432: {
-                if (this.mCurrentNdef != null) {
-                    if (!this.mCurrentNdef.isConnected()) {
-                        this.mCurrentNdef.connect();
+                if (mCurrentNdef != null) {
+                    if (!mCurrentNdef.isConnected()) {
+                        mCurrentNdef.connect();
                     }
-                    if (this.mCurrentNdef.getMaxSize() < newMessage.getByteArrayLength()) {
-                        throw new IllegalArgumentException(new StringBuilder(82).append("Not enough capacity in NFC tag. Capacity: ").append(this.mCurrentNdef.getMaxSize()).append(" bytes, ").append(newMessage.getByteArrayLength()).append(" required.").toString());
+                    if (mCurrentNdef.getMaxSize() < newMessage.getByteArrayLength()) {
+                        throw new IllegalArgumentException(new StringBuilder(82)
+                                .append("Not enough capacity in NFC tag. Capacity: ")
+                                .append(mCurrentNdef.getMaxSize()).append(" bytes, ")
+                                .append(newMessage.getByteArrayLength()).append(" required.")
+                                .toString());
                     }
                     try {
-                        this.mCurrentNdef.writeNdefMessage(newMessage);
+                        mCurrentNdef.writeNdefMessage(newMessage);
                         break Label_0432;
-                    }
-                    catch (FormatException e) {
+                    } catch (FormatException e) {
                         final String s = "Internal error when writing to NFC tag: ";
                         final String value = String.valueOf(e.toString());
                         throw new RuntimeException((value.length() != 0) ? s.concat(value) : new String(s));
                     }
                 }
-                final NdefFormatable ndef = NdefFormatable.get(this.mCurrentTag);
+                final NdefFormatable ndef = NdefFormatable.get(mCurrentTag);
                 if (ndef == null) {
                     throw new IOException("Could not find a writable technology for the NFC tag");
                 }
@@ -176,93 +181,93 @@ public class NfcSensor {
                     ndef.connect();
                     ndef.format(newMessage);
                     ndef.close();
-                }
-                catch (FormatException e2) {
+                } catch (FormatException e2) {
                     final String s2 = "Internal error when writing to NFC tag: ";
                     final String value2 = String.valueOf(e2.toString());
                     throw new RuntimeException((value2.length() != 0) ? s2.concat(value2) : new String(s2));
                 }
             }
-            this.onNewNfcTag(this.mCurrentTag);
+            this.onNewNfcTag(mCurrentTag);
         }
     }
     
     public void onResume(final Activity activity) {
-        if (!this.isNfcEnabled()) {
+        if (!isNfcEnabled()) {
             return;
         }
         final Intent intent = new Intent("android.nfc.action.NDEF_DISCOVERED");
         intent.setPackage(activity.getPackageName());
-        final PendingIntent pendingIntent = PendingIntent.getBroadcast(this.mContext, 0, intent, 0);
-        this.mNfcAdapter.enableForegroundDispatch(activity, pendingIntent, this.mNfcIntentFilters, (String[][])null);
+        final PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, 0, intent, 0);
+        mNfcAdapter.enableForegroundDispatch(activity, pendingIntent, mNfcIntentFilters, null);
     }
     
     public void onPause(final Activity activity) {
-        if (!this.isNfcEnabled()) {
+        if (!isNfcEnabled()) {
             return;
         }
-        this.mNfcAdapter.disableForegroundDispatch(activity);
+        mNfcAdapter.disableForegroundDispatch(activity);
     }
     
     public void onNfcIntent(final Intent intent) {
-        if (!this.isNfcEnabled() || intent == null || !this.mNfcIntentFilters[0].matchAction(intent.getAction())) {
+        if (!isNfcEnabled() || intent == null ||
+                !mNfcIntentFilters[0].matchAction(intent.getAction())) {
             return;
         }
-        this.onNewNfcTag((Tag)intent.getParcelableExtra("android.nfc.extra.TAG"));
+        onNewNfcTag((Tag) intent.getParcelableExtra("android.nfc.extra.TAG"));
     }
     
     private void onNewNfcTag(final Tag nfcTag) {
         if (nfcTag == null) {
             return;
         }
-        synchronized (this.mTagLock) {
-            final Tag previousTag = this.mCurrentTag;
-            final Ndef previousNdef = this.mCurrentNdef;
-            final boolean previousTagWasCardboard = this.mCurrentTagIsCardboard;
-            this.closeCurrentNfcTag();
-            this.mCurrentTag = nfcTag;
-            this.mCurrentNdef = Ndef.get(nfcTag);
-            if (this.mCurrentNdef == null) {
+        synchronized (mTagLock) {
+            final Tag previousTag = mCurrentTag;
+            final Ndef previousNdef = mCurrentNdef;
+            final boolean previousTagWasCardboard = mCurrentTagIsCardboard;
+            closeCurrentNfcTag();
+            mCurrentTag = nfcTag;
+            mCurrentNdef = Ndef.get(nfcTag);
+            if (mCurrentNdef == null) {
                 if (previousTagWasCardboard) {
-                    this.sendDisconnectionEvent();
+                    sendDisconnectionEvent();
                 }
                 return;
             }
             boolean isSameTag = false;
             if (previousNdef != null) {
-                final byte[] tagId1 = this.mCurrentTag.getId();
+                final byte[] tagId1 = mCurrentTag.getId();
                 final byte[] tagId2 = previousTag.getId();
                 isSameTag = (tagId1 != null && tagId2 != null && Arrays.equals(tagId1, tagId2));
                 if (!isSameTag && previousTagWasCardboard) {
-                    this.sendDisconnectionEvent();
+                    sendDisconnectionEvent();
                 }
             }
             NdefMessage nfcTagContents;
             try {
-                this.mCurrentNdef.connect();
-                nfcTagContents = this.mCurrentNdef.getCachedNdefMessage();
-            }
-            catch (Exception e) {
+                mCurrentNdef.connect();
+                nfcTagContents = mCurrentNdef.getCachedNdefMessage();
+            } catch (Exception e) {
                 final String s = "NfcSensor";
                 final String s2 = "Error reading NFC tag: ";
                 final String value = String.valueOf(e.toString());
                 Log.e(s, (value.length() != 0) ? s2.concat(value) : new String(s2));
                 if (isSameTag && previousTagWasCardboard) {
-                    this.sendDisconnectionEvent();
+                    sendDisconnectionEvent();
                 }
                 return;
             }
-            this.mCurrentTagIsCardboard = this.isCardboardNdefMessage(nfcTagContents);
-            if (!isSameTag && this.mCurrentTagIsCardboard) {
-                synchronized (this.mListeners) {
-                    for (final ListenerHelper listener : this.mListeners) {
-                        listener.onInsertedIntoCardboard(CardboardDeviceParams.createFromNfcContents(nfcTagContents));
+            mCurrentTagIsCardboard = isCardboardNdefMessage(nfcTagContents);
+            if (!isSameTag && mCurrentTagIsCardboard) {
+                synchronized (mListeners) {
+                    for (final ListenerHelper listener : mListeners) {
+                        listener.onInsertedIntoCardboard(
+                                CardboardDeviceParams.createFromNfcContents(nfcTagContents));
                     }
                 }
             }
-            if (this.mCurrentTagIsCardboard) {
-                this.mTagConnectionFailures = 0;
-                (this.mNfcDisconnectTimer = new Timer("NFC disconnect timer")).schedule(new TimerTask() {
+            if (mCurrentTagIsCardboard) {
+                mTagConnectionFailures = 0;
+                (mNfcDisconnectTimer = new Timer("NFC disconnect timer")).schedule(new TimerTask() {
                     @Override
                     public void run() {
                         synchronized (NfcSensor.this.mTagLock) {
@@ -281,26 +286,25 @@ public class NfcSensor {
     }
     
     private void closeCurrentNfcTag() {
-        if (this.mNfcDisconnectTimer != null) {
-            this.mNfcDisconnectTimer.cancel();
+        if (mNfcDisconnectTimer != null) {
+            mNfcDisconnectTimer.cancel();
         }
-        if (this.mCurrentNdef == null) {
+        if (mCurrentNdef == null) {
             return;
         }
         try {
-            this.mCurrentNdef.close();
-        }
-        catch (IOException e) {
+            mCurrentNdef.close();
+        } catch (IOException e) {
             Log.w("NfcSensor", e.toString());
         }
-        this.mCurrentTag = null;
-        this.mCurrentNdef = null;
-        this.mCurrentTagIsCardboard = false;
+        mCurrentTag = null;
+        mCurrentNdef = null;
+        mCurrentTagIsCardboard = false;
     }
     
     private void sendDisconnectionEvent() {
-        synchronized (this.mListeners) {
-            for (final ListenerHelper listener : this.mListeners) {
+        synchronized (mListeners) {
+            for (final ListenerHelper listener : mListeners) {
                 listener.onRemovedFromCardboard();
             }
         }
@@ -326,15 +330,14 @@ public class NfcSensor {
         return uri != null && CardboardDeviceParams.isCardboardUri(uri);
     }
     
-    private static class ListenerHelper implements OnCardboardNfcListener
-    {
+    private static class ListenerHelper implements OnCardboardNfcListener {
         private OnCardboardNfcListener mListener;
         private Handler mHandler;
         
         public ListenerHelper(final OnCardboardNfcListener listener, final Handler handler) {
             super();
-            this.mListener = listener;
-            this.mHandler = handler;
+            mListener = listener;
+            mHandler = handler;
         }
         
         public OnCardboardNfcListener getListener() {
@@ -343,7 +346,7 @@ public class NfcSensor {
         
         @Override
         public void onInsertedIntoCardboard(final CardboardDeviceParams deviceParams) {
-            this.mHandler.post((Runnable)new Runnable() {
+            mHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     ListenerHelper.this.mListener.onInsertedIntoCardboard(deviceParams);
@@ -353,7 +356,7 @@ public class NfcSensor {
         
         @Override
         public void onRemovedFromCardboard() {
-            this.mHandler.post((Runnable)new Runnable() {
+            mHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     ListenerHelper.this.mListener.onRemovedFromCardboard();
@@ -362,10 +365,8 @@ public class NfcSensor {
         }
     }
     
-    public interface OnCardboardNfcListener
-    {
+    public interface OnCardboardNfcListener {
         void onInsertedIntoCardboard(CardboardDeviceParams p0);
-        
         void onRemovedFromCardboard();
     }
 }
