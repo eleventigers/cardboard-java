@@ -1,15 +1,32 @@
 package com.google.vrtoolkit.cardboard.sensors;
 
-import android.content.*;
-import android.os.*;
-import java.io.*;
-import android.net.*;
-import android.nfc.*;
-import android.nfc.tech.*;
-import android.util.*;
-import android.app.*;
-import com.google.vrtoolkit.cardboard.*;
-import java.util.*;
+import android.app.Activity;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.Uri;
+import android.nfc.FormatException;
+import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
+import android.nfc.NfcAdapter;
+import android.nfc.Tag;
+import android.nfc.TagLostException;
+import android.nfc.tech.Ndef;
+import android.nfc.tech.NdefFormatable;
+import android.os.Handler;
+import android.util.Log;
+
+import com.google.vrtoolkit.cardboard.CardboardDeviceParams;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class NfcSensor {
 

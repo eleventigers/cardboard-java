@@ -1,12 +1,22 @@
 package com.google.vrtoolkit.cardboard;
 
-import android.content.pm.*;
-import java.util.*;
-import android.net.*;
-import android.widget.*;
-import android.content.*;
-import android.os.*;
-import android.app.*;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.FragmentManager;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
+import android.os.Bundle;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 class UiUtils {
     private static final String CARDBOARD_WEBSITE = "http://google.com/cardboard/cfg?vrtoolkit_version=0.5.1";

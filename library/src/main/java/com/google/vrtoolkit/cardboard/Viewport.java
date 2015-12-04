@@ -1,6 +1,6 @@
 package com.google.vrtoolkit.cardboard;
 
-import android.opengl.*;
+import android.opengl.GLES20;
 
 public class Viewport {
     public int x;

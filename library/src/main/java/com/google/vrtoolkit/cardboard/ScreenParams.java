@@ -1,9 +1,11 @@
 package com.google.vrtoolkit.cardboard;
 
-import android.view.*;
-import android.util.*;
-import com.google.vrtoolkit.cardboard.proto.*;
-import java.io.*;
+import android.util.DisplayMetrics;
+import android.view.Display;
+
+import com.google.vrtoolkit.cardboard.proto.Phone;
+
+import java.io.InputStream;
 
 public class ScreenParams {
     private static final float METERS_PER_INCH = 0.0254f;
