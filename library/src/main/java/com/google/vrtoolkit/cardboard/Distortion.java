@@ -1,6 +1,6 @@
 package com.google.vrtoolkit.cardboard;
 
-import java.util.*;
+import java.util.Arrays;
 
 public class Distortion {
     private static final float[] DEFAULT_COEFFICIENTS;

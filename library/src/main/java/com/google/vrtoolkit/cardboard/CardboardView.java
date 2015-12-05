@@ -1,16 +1,20 @@
 package com.google.vrtoolkit.cardboard;
 
-import com.google.vrtoolkit.cardboard.sensors.*;
-import java.util.concurrent.*;
-import android.content.*;
-import com.google.vrtoolkit.cardboard.proto.*;
-import android.util.*;
-import android.view.*;
+import android.content.Context;
+import android.opengl.GLES20;
+import android.opengl.GLSurfaceView;
+import android.opengl.Matrix;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.view.MotionEvent;
+
+import com.google.vrtoolkit.cardboard.proto.Phone;
+import com.google.vrtoolkit.cardboard.sensors.HeadTracker;
+
+import java.util.concurrent.CountDownLatch;
 
 import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.*;
-import android.opengl.*;
-import javax.microedition.khronos.egl.*;
+import javax.microedition.khronos.opengles.GL10;
 
 public class CardboardView extends GLSurfaceView {
     private static final String TAG = "CardboardView";

@@ -1,8 +1,10 @@
 package com.google.vrtoolkit.cardboard;
 
-import java.nio.*;
-import android.opengl.*;
-import java.util.*;
+import android.opengl.GLES20;
+
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.util.ArrayList;
 
 class GLStateBackup {
     private boolean mCullFaceEnabled;

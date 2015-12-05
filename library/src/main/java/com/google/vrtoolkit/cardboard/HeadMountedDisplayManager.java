@@ -1,9 +1,18 @@
 package com.google.vrtoolkit.cardboard;
 
-import android.content.*;
-import android.util.*;
-import android.view.*;
-import java.io.*;
+import android.content.Context;
+import android.util.Log;
+import android.view.Display;
+import android.view.WindowManager;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public class HeadMountedDisplayManager {
     private static final String TAG = "HeadMountedDisplayManager";

@@ -1,12 +1,18 @@
 package com.google.vrtoolkit.cardboard;
 
-import android.content.*;
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Rect;
+import android.opengl.GLES20;
 import android.opengl.Matrix;
-import android.view.*;
-import android.util.*;
-import java.nio.*;
-import android.opengl.*;
-import android.graphics.*;
+import android.util.Log;
+import android.view.MotionEvent;
+
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
 
 class UiLayer {
     private static final String TAG;

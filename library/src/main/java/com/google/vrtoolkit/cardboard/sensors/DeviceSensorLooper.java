@@ -1,8 +1,14 @@
 package com.google.vrtoolkit.cardboard.sensors;
 
-import java.util.*;
-import android.hardware.*;
-import android.os.*;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
+
+import java.util.ArrayList;
 
 public class DeviceSensorLooper implements SensorEventProvider {
     private boolean mIsRunning;

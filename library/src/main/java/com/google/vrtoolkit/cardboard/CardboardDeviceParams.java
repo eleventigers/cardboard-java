@@ -1,12 +1,19 @@
 package com.google.vrtoolkit.cardboard;
 
-import android.net.*;
-import com.google.vrtoolkit.cardboard.proto.*;
-import android.util.*;
-import java.nio.*;
-import com.google.protobuf.nano.*;
-import java.io.*;
-import android.nfc.*;
+import android.net.Uri;
+import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
+import android.util.Base64;
+import android.util.Log;
+
+import com.google.protobuf.nano.InvalidProtocolBufferNanoException;
+import com.google.protobuf.nano.MessageNano;
+import com.google.vrtoolkit.cardboard.proto.CardboardDevice;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
 
 public class CardboardDeviceParams{
     private static final String TAG = "CardboardDeviceParams";

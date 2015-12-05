@@ -1,11 +1,18 @@
 package com.google.vrtoolkit.cardboard.sensors;
 
-import com.google.vrtoolkit.cardboard.sensors.internal.*;
-import android.content.*;
-import android.view.*;
-import android.opengl.*;
-import android.hardware.*;
-import java.util.concurrent.*;
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.opengl.Matrix;
+import android.view.Display;
+import android.view.WindowManager;
+
+import com.google.vrtoolkit.cardboard.sensors.internal.OrientationEKF;
+import com.google.vrtoolkit.cardboard.sensors.internal.Vector3d;
+
+import java.util.concurrent.TimeUnit;
 
 public class HeadTracker implements SensorEventListener {
     private static final float DEFAULT_NECK_HORIZONTAL_OFFSET = 0.08f;

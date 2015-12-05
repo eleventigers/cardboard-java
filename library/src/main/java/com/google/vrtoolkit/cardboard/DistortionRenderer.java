@@ -1,8 +1,14 @@
 package com.google.vrtoolkit.cardboard;
 
-import android.opengl.*;
-import android.util.*;
-import java.nio.*;
+import android.opengl.GLES20;
+import android.util.Log;
+
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 
 public class DistortionRenderer {
     private static final String TAG = "DistortionRenderer";

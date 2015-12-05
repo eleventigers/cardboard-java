@@ -1,10 +1,17 @@
 package com.google.vrtoolkit.cardboard;
 
-import com.google.vrtoolkit.cardboard.proto.*;
-import java.nio.*;
-import android.util.*;
-import com.google.protobuf.nano.*;
-import java.io.*;
+import android.util.Log;
+
+import com.google.protobuf.nano.InvalidProtocolBufferNanoException;
+import com.google.protobuf.nano.MessageNano;
+import com.google.vrtoolkit.cardboard.proto.Phone;
+
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 public class PhoneParams {
     private static final String TAG;
