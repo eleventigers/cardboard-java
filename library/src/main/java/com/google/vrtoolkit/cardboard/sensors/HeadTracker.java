@@ -36,8 +36,8 @@ public class HeadTracker implements SensorEventListener {
     private final Vector3d mLatestAcc;
     
     public static HeadTracker createFromContext(final Context context) {
-        final SensorManager sensorManager = (SensorManager)context.getSystemService("sensor");
-        final Display display = ((WindowManager)context.getSystemService("window")).getDefaultDisplay();
+        final SensorManager sensorManager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
+        final Display display = ((WindowManager)context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         return new HeadTracker(new DeviceSensorLooper(sensorManager), new SystemClock(), display);
     }
     
@@ -63,11 +63,11 @@ public class HeadTracker implements SensorEventListener {
     }
     
     public void onSensorChanged(final SensorEvent event) {
-        if (event.sensor.getType() == 1) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             this.mLatestAcc.set(event.values[0], event.values[1], event.values[2]);
             this.mTracker.processAcc(this.mLatestAcc, event.timestamp);
         }
-        else if (event.sensor.getType() == 4) {
+        else if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
             this.mLatestGyroEventClockTimeNs = this.mClock.nanoTime();
             this.mLatestGyro.set(event.values[0], event.values[1], event.values[2]);
             Vector3d.sub(this.mLatestGyro, this.mGyroBias, this.mLatestGyro);
