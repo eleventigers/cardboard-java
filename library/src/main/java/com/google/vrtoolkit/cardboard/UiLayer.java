@@ -185,7 +185,7 @@ class UiLayer {
         public int uColor;
         
         void initializeGl() {
-            this.program = this.createProgram("uniform mat4 uMVPMatrix;\nattribute vec2 aPosition;\nvoid main() {\n    gl_Position = uMVPMatrix * vec4(aPosition, 0.0, 1.0);\n}\n", "precision mediump float;\nuniform vec4 uColor;\nvoid main() {\n    gl_FragColor = uColor;\n}\n");
+            this.program = this.createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
             if (this.program == 0) {
                 throw new RuntimeException("Could not create program");
             }
@@ -251,8 +251,7 @@ class UiLayer {
         }
     }
     
-    private static class MeshRenderer
-    {
+    private static class MeshRenderer {
         private static final int BYTES_PER_FLOAT = 4;
         private static final int BYTES_PER_SHORT = 4;
         protected static final int COMPONENTS_PER_VERT = 2;
@@ -273,19 +272,19 @@ class UiLayer {
         }
         
         void genAndBindBuffers(final float[] vertexData, final short[] indexData) {
-            final FloatBuffer vertexBuffer = ByteBuffer.allocateDirect(vertexData.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
+            final FloatBuffer vertexBuffer = ByteBuffer.allocateDirect(vertexData.length * BYTES_PER_FLOAT).order(ByteOrder.nativeOrder()).asFloatBuffer();
             vertexBuffer.put(vertexData).position(0);
             this.mNumIndices = indexData.length;
-            final ShortBuffer indexBuffer = ByteBuffer.allocateDirect(this.mNumIndices * 4).order(ByteOrder.nativeOrder()).asShortBuffer();
+            final ShortBuffer indexBuffer = ByteBuffer.allocateDirect(this.mNumIndices * BYTES_PER_SHORT).order(ByteOrder.nativeOrder()).asShortBuffer();
             indexBuffer.put(indexData).position(0);
             final int[] bufferIds = new int[2];
             GLES20.glGenBuffers(2, bufferIds, 0);
             this.mArrayBufferId = bufferIds[0];
             this.mElementBufferId = bufferIds[1];
             GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, this.mArrayBufferId);
-            GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, vertexData.length * 4, (Buffer)vertexBuffer, GLES20.GL_STATIC_DRAW);
+            GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, vertexData.length * BYTES_PER_FLOAT, vertexBuffer, GLES20.GL_STATIC_DRAW);
             GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, this.mElementBufferId);
-            GLES20.glBufferData(GLES20.GL_ELEMENT_ARRAY_BUFFER, indexData.length * 4, (Buffer)indexBuffer, GLES20.GL_STATIC_DRAW);
+            GLES20.glBufferData(GLES20.GL_ELEMENT_ARRAY_BUFFER, indexData.length * BYTES_PER_SHORT, indexBuffer, GLES20.GL_STATIC_DRAW);
             checkGlError("genAndBindBuffers");
         }
         
@@ -306,9 +305,8 @@ class UiLayer {
         }
     }
     
-    private static class AlignmentMarkerRenderer extends MeshRenderer
-    {
-        private static final int COLOR;
+    private static class AlignmentMarkerRenderer extends MeshRenderer {
+        private static final int COLOR = Color.argb(255, 50, 50, 50);
         private float mVerticalBorderPaddingPx;
         private float mLineThicknessPx;
         
@@ -341,14 +339,9 @@ class UiLayer {
             GLES20.glUniform4f(this.mShader.uColor, Color.red(AlignmentMarkerRenderer.COLOR) / 255.0f, Color.green(AlignmentMarkerRenderer.COLOR) / 255.0f, Color.blue(AlignmentMarkerRenderer.COLOR) / 255.0f, Color.alpha(AlignmentMarkerRenderer.COLOR) / 255.0f);
             super.draw();
         }
-        
-        static {
-            COLOR = Color.argb(255, 50, 50, 50);
-        }
     }
     
-    private static class SettingsButtonRenderer extends MeshRenderer
-    {
+    private static class SettingsButtonRenderer extends MeshRenderer {
         private static final int DEGREES_PER_GEAR_SECTION = 60;
         private static final int OUTER_RIM_END_DEG = 12;
         private static final int INNER_RIM_BEGIN_DEG = 20;
@@ -377,13 +370,13 @@ class UiLayer {
                     r = 1.0f;
                 }
                 else if (mod <= 20.0f) {
-                    r = lerp(1.0f, 0.75f, (mod - 12.0f) / lerpInterval);
+                    r = lerp(1.0f, MIDDLE_RADIUS, (mod - 12.0f) / lerpInterval);
                 }
                 else if (mod <= 40.0f) {
                     r = 0.75f;
                 }
                 else if (mod <= 48.0f) {
-                    r = lerp(0.75f, 1.0f, (mod - 60.0f + 20.0f) / lerpInterval);
+                    r = lerp(MIDDLE_RADIUS, 1.0f, (mod - 60.0f + 20.0f) / lerpInterval);
                 }
                 else {
                     r = 1.0f;
@@ -394,8 +387,8 @@ class UiLayer {
             final int innerStartingIndex = 2 * numVerticesPerRim;
             for (int j = 0; j < numVerticesPerRim; ++j) {
                 final float theta2 = j / numVerticesPerRim * 360.0f;
-                vertexData[innerStartingIndex + 2 * j] = 0.3125f * (float)Math.cos(Math.toRadians(90.0f - theta2));
-                vertexData[innerStartingIndex + 2 * j + 1] = 0.3125f * (float)Math.sin(Math.toRadians(90.0f - theta2));
+                vertexData[innerStartingIndex + 2 * j] = INNER_RADIUS * (float)Math.cos(Math.toRadians(90.0f - theta2));
+                vertexData[innerStartingIndex + 2 * j + 1] = INNER_RADIUS * (float)Math.sin(Math.toRadians(90.0f - theta2));
             }
             final short[] indexData = new short[62];
             for (int k = 0; k < numVerticesPerRim; ++k) {

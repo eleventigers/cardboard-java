@@ -27,8 +27,8 @@ class UiUtils {
     static void launchOrInstallCardboard(final Context context) {
         final PackageManager pm = context.getPackageManager();
         final Intent settingsIntent = new Intent();
-        settingsIntent.setAction("com.google.vrtoolkit.cardboard.CONFIGURE");
-        settingsIntent.putExtra("VERSION", "0.5.1");
+        settingsIntent.setAction(CARDBOARD_CONFIGURE_ACTION);
+        settingsIntent.putExtra(INTENT_EXTRAS_VERSION_KEY, Constants.VERSION);
         final List<ResolveInfo> resolveInfos = (List<ResolveInfo>)pm.queryIntentActivities(settingsIntent, 0);
         final List<Intent> intentsToGoogleCardboard = new ArrayList<Intent>();
         for (final ResolveInfo info : resolveInfos) {
@@ -51,23 +51,23 @@ class UiUtils {
     }
     
     private static void showInstallDialog(final Context context) {
-        final DialogInterface.OnClickListener listener = (DialogInterface.OnClickListener)new DialogInterface.OnClickListener() {
+        final DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
             public void onClick(final DialogInterface dialog, final int id) {
                 try {
-                    context.startActivity(new Intent("android.intent.action.VIEW", Uri.parse("http://google.com/cardboard/cfg?vrtoolkit_version=0.5.1")));
+                    context.startActivity(new Intent("android.intent.action.VIEW", Uri.parse(CARDBOARD_WEBSITE)));
                 }
                 catch (ActivityNotFoundException e) {
-                    Toast.makeText(context.getApplicationContext(), (CharSequence)"No browser to open website.", 1).show();
+                    Toast.makeText(context, NO_BROWSER_TEXT, Toast.LENGTH_LONG).show();
                 }
             }
         };
         final FragmentManager fragmentManager = ((Activity)context).getFragmentManager();
-        final DialogFragment dialog = new SettingsDialogFragment((DialogStrings)new InstallDialogStrings(), listener);
+        final DialogFragment dialog = new SettingsDialogFragment(new InstallDialogStrings(), listener);
         dialog.show(fragmentManager, "InstallCardboardDialog");
     }
     
     private static void showConfigureDialog(final Context context, final Intent intent) {
-        final DialogInterface.OnClickListener listener = (DialogInterface.OnClickListener)new DialogInterface.OnClickListener() {
+        final DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
             public void onClick(final DialogInterface dialog, final int id) {
                 try {
                     context.startActivity(intent);
@@ -78,7 +78,7 @@ class UiUtils {
             }
         };
         final FragmentManager fragmentManager = ((Activity)context).getFragmentManager();
-        final DialogFragment dialog = new SettingsDialogFragment((DialogStrings)new ConfigureDialogStrings(), listener);
+        final DialogFragment dialog = new SettingsDialogFragment(new ConfigureDialogStrings(), listener);
         dialog.show(fragmentManager, "ConfigureCardboardDialog");
     }
     
@@ -112,17 +112,19 @@ class UiUtils {
     private static class SettingsDialogFragment extends DialogFragment {
         private DialogStrings mDialogStrings;
         private DialogInterface.OnClickListener mPositiveButtonListener;
-        
-        private SettingsDialogFragment(final DialogStrings dialogStrings, final DialogInterface.OnClickListener positiveButtonListener) {
+
+        public SettingsDialogFragment(final DialogStrings dialogStrings, final DialogInterface.OnClickListener positiveButtonListener) {
             super();
             this.mDialogStrings = dialogStrings;
             this.mPositiveButtonListener = positiveButtonListener;
         }
         
         public Dialog onCreateDialog(final Bundle savedInstanceState) {
-            final AlertDialog.Builder builder = new AlertDialog.Builder((Context)this.getActivity());
-            builder.setTitle((CharSequence)this.mDialogStrings.mTitle).setMessage((CharSequence)this.mDialogStrings.mMessage).setPositiveButton((CharSequence)this.mDialogStrings.mPositiveButtonText, this.mPositiveButtonListener).setNegativeButton((CharSequence)this.mDialogStrings.mNegativeButtonText, (DialogInterface.OnClickListener)null);
-            return (Dialog)builder.create();
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
+            builder.setTitle(this.mDialogStrings.mTitle).setMessage(this.mDialogStrings.mMessage)
+                    .setPositiveButton(this.mDialogStrings.mPositiveButtonText, this.mPositiveButtonListener)
+                    .setNegativeButton(this.mDialogStrings.mNegativeButtonText, null);
+            return builder.create();
         }
     }
 }

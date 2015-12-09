@@ -15,7 +15,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class HeadMountedDisplayManager {
-    private static final String TAG = "HeadMountedDisplayManager";
+    private static final String TAG = "HMountedDisplayManager";
     private final HeadMountedDisplay mHmd;
     private final Context mContext;
     
@@ -33,12 +33,12 @@ public class HeadMountedDisplayManager {
         final CardboardDeviceParams deviceParams = this.createCardboardDeviceParamsFromExternalStorage();
         if (deviceParams != null && !deviceParams.equals(this.mHmd.getCardboardDeviceParams())) {
             this.mHmd.setCardboardDeviceParams(deviceParams);
-            Log.i("HeadMountedDisplayManager", "Successfully read updated device params from external storage");
+            Log.i(TAG, "Successfully read updated device params from external storage");
         }
         final ScreenParams screenParams = this.createScreenParamsFromExternalStorage(this.getDisplay());
         if (screenParams != null && !screenParams.equals(this.mHmd.getScreenParams())) {
             this.mHmd.setScreenParams(screenParams);
-            Log.i("HeadMountedDisplayManager", "Successfully read updated screen params from external storage");
+            Log.i(TAG, "Successfully read updated screen params from external storage");
         }
     }
     
@@ -79,10 +79,10 @@ public class HeadMountedDisplayManager {
             }
         }
         if (!success) {
-            Log.e("HeadMountedDisplayManager", "Could not write Cardboard parameters to external storage.");
+            Log.e(TAG, "Could not write Cardboard parameters to external storage.");
         }
         else {
-            Log.i("HeadMountedDisplayManager", "Successfully wrote Cardboard parameters to external storage.");
+            Log.i(TAG, "Successfully wrote Cardboard parameters to external storage.");
         }
     }
     
@@ -95,7 +95,7 @@ public class HeadMountedDisplayManager {
         final Display display = this.getDisplay();
         final ScreenParams params = this.createScreenParamsFromExternalStorage(display);
         if (params != null) {
-            Log.i("HeadMountedDisplayManager", "Successfully read screen params from external storage");
+            Log.i(TAG, "Successfully read screen params from external storage");
             return params;
         }
         return new ScreenParams(display);
@@ -104,12 +104,12 @@ public class HeadMountedDisplayManager {
     private CardboardDeviceParams createCardboardDeviceParams() {
         CardboardDeviceParams params = this.createCardboardDeviceParamsFromExternalStorage();
         if (params != null) {
-            Log.i("HeadMountedDisplayManager", "Successfully read device params from external storage");
+            Log.i(TAG, "Successfully read device params from external storage");
             return params;
         }
         params = this.createCardboardDeviceParamsFromAssetFolder();
         if (params != null) {
-            Log.i("HeadMountedDisplayManager", "Successfully read device params from asset folder");
+            Log.i(TAG, "Successfully read device params from asset folder");
             this.writeCardboardParamsToExternalStorage();
             return params;
         }
@@ -130,14 +130,12 @@ public class HeadMountedDisplayManager {
             }
         }
         catch (FileNotFoundException e) {
-            final String s = "HeadMountedDisplayManager";
             final String value = String.valueOf(String.valueOf(e));
-            Log.d(s, new StringBuilder(47 + value.length()).append("Bundled Cardboard device parameters not found: ").append(value).toString());
+            Log.d(TAG, new StringBuilder(47 + value.length()).append("Bundled Cardboard device parameters not found: ").append(value).toString());
         }
         catch (IOException e2) {
-            final String s2 = "HeadMountedDisplayManager";
             final String value2 = String.valueOf(String.valueOf(e2));
-            Log.e(s2, new StringBuilder(43 + value2.length()).append("Error reading config file in asset folder: ").append(value2).toString());
+            Log.e(TAG, new StringBuilder(43 + value2.length()).append("Error reading config file in asset folder: ").append(value2).toString());
         }
         return null;
     }
@@ -159,9 +157,8 @@ public class HeadMountedDisplayManager {
             }
         }
         catch (FileNotFoundException e) {
-            final String s = "HeadMountedDisplayManager";
             final String value = String.valueOf(String.valueOf(e));
-            Log.d(s, new StringBuilder(44 + value.length()).append("Cardboard device parameters file not found: ").append(value).toString());
+            Log.d(TAG, new StringBuilder(44 + value.length()).append("Cardboard device parameters file not found: ").append(value).toString());
             return null;
         }
     }
@@ -183,9 +180,8 @@ public class HeadMountedDisplayManager {
             }
         }
         catch (FileNotFoundException e) {
-            final String s = "HeadMountedDisplayManager";
             final String value = String.valueOf(String.valueOf(e));
-            Log.d(s, new StringBuilder(44 + value.length()).append("Cardboard screen parameters file not found: ").append(value).toString());
+            Log.d(TAG, new StringBuilder(44 + value.length()).append("Cardboard screen parameters file not found: ").append(value).toString());
             return null;
         }
     }

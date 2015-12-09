@@ -219,10 +219,9 @@ public class CardboardView extends GLSurfaceView {
                 this.mShutdownLatch.await();
             }
             catch (InterruptedException e) {
-                final String s = "CardboardView";
                 final String s2 = "Interrupted during shutdown: ";
                 final String value = String.valueOf(e.toString());
-                Log.e(s, (value.length() != 0) ? s2.concat(value) : new String(s2));
+                Log.e(TAG, (value.length() != 0) ? s2.concat(value) : new String(s2));
             }
             this.mShutdownLatch = null;
         }
@@ -420,10 +419,9 @@ public class CardboardView extends GLSurfaceView {
                 finished.await();
             }
             catch (InterruptedException e) {
-                final String s = "CardboardView";
                 final String s2 = "Interrupted while reading frame params: ";
                 final String value = String.valueOf(e.toString());
-                Log.e(s, (value.length() != 0) ? s2.concat(value) : new String(s2));
+                Log.e(TAG, (value.length() != 0) ? s2.concat(value) : new String(s2));
             }
         }
         
@@ -498,7 +496,7 @@ public class CardboardView extends GLSurfaceView {
             if (width != screen.getWidth() || height != screen.getHeight()) {
                 if (!this.mInvalidSurfaceSize) {
                     GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
-                    Log.w("CardboardView", new StringBuilder(124).append("Surface size ").append(width).append("x").append(height).append(" does not match the expected screen size ").append(screen.getWidth()).append("x").append(screen.getHeight()).append(". Rendering is disabled.").toString());
+                    Log.w(TAG, new StringBuilder(124).append("Surface size ").append(width).append("x").append(height).append(" does not match the expected screen size ").append(screen.getWidth()).append("x").append(screen.getHeight()).append(". Rendering is disabled.").toString());
                 }
                 this.mInvalidSurfaceSize = true;
             }
