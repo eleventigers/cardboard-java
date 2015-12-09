@@ -91,13 +91,13 @@ public class CardboardDeviceParams{
             return null;
         }
         if (isOriginalCardboardDeviceUri(uri)) {
-            Log.d("CardboardDeviceParams", "URI recognized as original cardboard device.");
+            Log.d(TAG, "URI recognized as original cardboard device.");
             final CardboardDeviceParams deviceParams = new CardboardDeviceParams();
             deviceParams.setDefaultValues();
             return deviceParams;
         }
         if (!isCardboardDeviceUri(uri)) {
-            Log.w("CardboardDeviceParams", String.format("URI \"%s\" not recognized as cardboard device.", uri));
+            Log.w(TAG, String.format("URI \"%s\" not recognized as cardboard device.", uri));
             return null;
         }
         CardboardDevice.DeviceParams params = null;
@@ -106,7 +106,7 @@ public class CardboardDeviceParams{
             try {
                 final byte[] bytes = Base64.decode(paramsEncoded, 11);
                 params = (CardboardDevice.DeviceParams)MessageNano.mergeFrom((MessageNano)new CardboardDevice.DeviceParams(), bytes);
-                Log.d("CardboardDeviceParams", "Read cardboard params from URI.");
+                Log.d(TAG, "Read cardboard params from URI.");
             }
             catch (Exception e) {
                 final String s = "CardboardDeviceParams";
@@ -116,7 +116,7 @@ public class CardboardDeviceParams{
             }
         }
         else {
-            Log.w("CardboardDeviceParams", "No cardboard parameters in URI.");
+            Log.w(TAG, "No cardboard parameters in URI.");
         }
         return new CardboardDeviceParams(params);
     }
@@ -128,33 +128,31 @@ public class CardboardDeviceParams{
         try {
             final ByteBuffer header = ByteBuffer.allocate(8);
             if (inputStream.read(header.array(), 0, header.array().length) == -1) {
-                Log.e("CardboardDeviceParams", "Error parsing param record: end of stream.");
+                Log.e(TAG, "Error parsing param record: end of stream.");
                 return null;
             }
             final int sentinel = header.getInt();
             final int length = header.getInt();
             if (sentinel != STREAM_SENTINEL) {
-                Log.e("CardboardDeviceParams", "Error parsing param record: incorrect sentinel.");
+                Log.e(TAG, "Error parsing param record: incorrect sentinel.");
                 return null;
             }
             final byte[] protoBytes = new byte[length];
             if (inputStream.read(protoBytes, 0, protoBytes.length) == -1) {
-                Log.e("CardboardDeviceParams", "Error parsing param record: end of stream.");
+                Log.e(TAG, "Error parsing param record: end of stream.");
                 return null;
             }
             return new CardboardDeviceParams((CardboardDevice.DeviceParams)MessageNano.mergeFrom((MessageNano)new CardboardDevice.DeviceParams(), protoBytes));
         }
         catch (InvalidProtocolBufferNanoException e) {
-            final String s = "CardboardDeviceParams";
             final String s2 = "Error parsing protocol buffer: ";
             final String value = String.valueOf(e.toString());
-            Log.w(s, (value.length() != 0) ? s2.concat(value) : new String(s2));
+            Log.w(TAG, (value.length() != 0) ? s2.concat(value) : new String(s2));
         }
         catch (IOException e2) {
-            final String s3 = "CardboardDeviceParams";
             final String s4 = "Error reading Cardboard parameters: ";
             final String value2 = String.valueOf(e2.toString());
-            Log.w(s3, (value2.length() != 0) ? s4.concat(value2) : new String(s4));
+            Log.w(TAG, (value2.length() != 0) ? s4.concat(value2) : new String(s4));
         }
         return null;
     }
@@ -170,17 +168,16 @@ public class CardboardDeviceParams{
             return true;
         }
         catch (IOException e) {
-            final String s = "CardboardDeviceParams";
             final String s2 = "Error writing Cardboard parameters: ";
             final String value = String.valueOf(e.toString());
-            Log.w(s, (value.length() != 0) ? s2.concat(value) : new String(s2));
+            Log.w(TAG, (value.length() != 0) ? s2.concat(value) : new String(s2));
             return false;
         }
     }
     
     public static CardboardDeviceParams createFromNfcContents(final NdefMessage tagContents) {
         if (tagContents == null) {
-            Log.w("CardboardDeviceParams", "Could not get contents from NFC tag.");
+            Log.w(TAG, "Could not get contents from NFC tag.");
             return null;
         }
         for (final NdefRecord record : tagContents.getRecords()) {

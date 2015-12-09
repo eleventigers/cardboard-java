@@ -193,7 +193,7 @@ public class NfcSensor {
                 if (ndef == null) {
                     throw new IOException("Could not find a writable technology for the NFC tag");
                 }
-                Log.w("NfcSensor", "Ndef technology not available. Falling back to NdefFormattable.");
+                Log.w(TAG, "Ndef technology not available. Falling back to NdefFormattable.");
                 try {
                     ndef.connect();
                     ndef.format(newMessage);
@@ -312,7 +312,7 @@ public class NfcSensor {
         try {
             mCurrentNdef.close();
         } catch (IOException e) {
-            Log.w("NfcSensor", e.toString());
+            Log.w(TAG, e.toString());
         }
         mCurrentTag = null;
         mCurrentNdef = null;

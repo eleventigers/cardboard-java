@@ -358,8 +358,8 @@ public class DistortionRenderer {
             final int[] compiled = { 0 };
             GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, compiled, 0);
             if (compiled[0] == 0) {
-                Log.e("DistortionRenderer", new StringBuilder(37).append("Could not compile shader ").append(shaderType).append(":").toString());
-                Log.e("DistortionRenderer", GLES20.glGetShaderInfoLog(shader));
+                Log.e(TAG, new StringBuilder(37).append("Could not compile shader ").append(shaderType).append(":").toString());
+                Log.e(TAG, GLES20.glGetShaderInfoLog(shader));
                 GLES20.glDeleteShader(shader);
                 shader = 0;
             }
@@ -386,8 +386,8 @@ public class DistortionRenderer {
             final int[] linkStatus = { 0 };
             GLES20.glGetProgramiv(program, GLES20.GL_LINK_STATUS, linkStatus, 0);
             if (linkStatus[0] != 1) {
-                Log.e("DistortionRenderer", "Could not link program: ");
-                Log.e("DistortionRenderer", GLES20.glGetProgramInfoLog(program));
+                Log.e(TAG, "Could not link program: ");
+                Log.e(TAG, GLES20.glGetProgramInfoLog(program));
                 GLES20.glDeleteProgram(program);
                 program = 0;
             }
@@ -467,9 +467,8 @@ public class DistortionRenderer {
     private void checkGlError(final String op) {
         final int error;
         if ((error = GLES20.glGetError()) != 0) {
-            final String s = "DistortionRenderer";
             final String value = String.valueOf(String.valueOf(op));
-            Log.e(s, new StringBuilder(21 + value.length()).append(value).append(": glError ").append(error).toString());
+            Log.e(TAG, new StringBuilder(21 + value.length()).append(value).append(": glError ").append(error).toString());
             final String value2 = String.valueOf(String.valueOf(op));
             throw new RuntimeException(new StringBuilder(21 + value2.length()).append(value2).append(": glError ").append(error).toString());
         }

@@ -4,6 +4,7 @@ public class So3Util {
     private static final double M_SQRT1_2 = 0.7071067811865476;
     private static final double ONE_6TH = 0.1666666716337204;
     private static final double ONE_20TH = 0.1666666716337204;
+
     private static Vector3d temp31;
     private static Vector3d sO3FromTwoVecN;
     private static Vector3d sO3FromTwoVecA;
@@ -48,7 +49,7 @@ public class So3Util {
     
     private static void rotationPiAboutAxis(final Vector3d v, final Matrix3x3d result) {
         So3Util.rotationPiAboutAxisTemp.set(v);
-        So3Util.rotationPiAboutAxisTemp.scale(3.141592653589793 / So3Util.rotationPiAboutAxisTemp.length());
+        So3Util.rotationPiAboutAxisTemp.scale(Math.PI / So3Util.rotationPiAboutAxisTemp.length());
         final double invTheta = 0.3183098861837907;
         final double kA = 0.0;
         final double kB = 0.20264236728467558;
@@ -80,17 +81,17 @@ public class So3Util {
         final double cosAngle = (so3.get(0, 0) + so3.get(1, 1) + so3.get(2, 2) - 1.0) * 0.5;
         result.set((so3.get(2, 1) - so3.get(1, 2)) / 2.0, (so3.get(0, 2) - so3.get(2, 0)) / 2.0, (so3.get(1, 0) - so3.get(0, 1)) / 2.0);
         final double sinAngleAbs = result.length();
-        if (cosAngle > 0.7071067811865476) {
+        if (cosAngle > M_SQRT1_2) {
             if (sinAngleAbs > 0.0) {
                 result.scale(Math.asin(sinAngleAbs) / sinAngleAbs);
             }
         }
-        else if (cosAngle > -0.7071067811865476) {
+        else if (cosAngle > -M_SQRT1_2) {
             final double angle = Math.acos(cosAngle);
             result.scale(angle / sinAngleAbs);
         }
         else {
-            final double angle = 3.141592653589793 - Math.asin(sinAngleAbs);
+            final double angle = Math.PI - Math.asin(sinAngleAbs);
             final double d0 = so3.get(0, 0) - cosAngle;
             final double d = so3.get(1, 1) - cosAngle;
             final double d2 = so3.get(2, 2) - cosAngle;

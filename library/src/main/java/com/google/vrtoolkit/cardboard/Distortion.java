@@ -3,9 +3,9 @@ package com.google.vrtoolkit.cardboard;
 import java.util.Arrays;
 
 public class Distortion {
-    private static final float[] DEFAULT_COEFFICIENTS;
+    private static final float[] DEFAULT_COEFFICIENTS = new float[] { 0.441f, 0.156f };
     private float[] mCoefficients;
-    
+
     public Distortion() {
         super();
         this.mCoefficients = Distortion.DEFAULT_COEFFICIENTS.clone();
@@ -158,8 +158,5 @@ public class Distortion {
         builder.append("],\n}");
         return builder.toString();
     }
-    
-    static {
-        DEFAULT_COEFFICIENTS = new float[] { 0.441f, 0.156f };
-    }
+
 }
