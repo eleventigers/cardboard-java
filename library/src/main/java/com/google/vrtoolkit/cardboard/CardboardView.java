@@ -261,9 +261,9 @@ public class CardboardView extends GLSurfaceView {
             super();
             this.mHmd = new HeadMountedDisplay(CardboardView.this.getHeadMountedDisplay());
             this.mHeadTransform = new HeadTransform();
-            this.mMonocular = new Eye(0);
-            this.mLeftEye = new Eye(1);
-            this.mRightEye = new Eye(2);
+            this.mMonocular = new Eye(Eye.Type.MONOCULAR);
+            this.mLeftEye = new Eye(Eye.Type.LEFT);
+            this.mRightEye = new Eye(Eye.Type.RIGHT);
             this.updateFieldOfView(this.mLeftEye.getFov(), this.mRightEye.getFov());
             (this.mDistortionRenderer = new DistortionRenderer()).setRestoreGLStateEnabled(CardboardView.this.mRestoreGLStateEnabled);
             this.mDistortionRenderer.setChromaticAberrationCorrectionEnabled(CardboardView.this.mChromaticAberrationCorrectionEnabled);
